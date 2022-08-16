@@ -1,3 +1,7 @@
-$.modal = function () {
-  console.log("message");
+$.modal = function (options) {
+  return {
+    open() {},
+    close() {},
+    destroy() {},
+  };
 };
