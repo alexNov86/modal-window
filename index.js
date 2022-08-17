@@ -1,1 +1,1 @@
-$.modal();
+const myModelWindow = $.modal();
