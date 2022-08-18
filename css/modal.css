@@ -57,7 +57,7 @@
   -o-transition: background 0.5s ease-in;
 }
 .modal__window {
-  width: 600px;
+  width: 300px;
   border-radius: 5px;
   background: #fff;
   margin: 0 auto;
