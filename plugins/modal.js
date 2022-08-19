@@ -1,47 +1,56 @@
-function _createModalWindow(
-  title = "Modal title",
-  closable = true,
-  content = "Lorem ipsum dolor sit amet."
-) {
+Element.prototype.appendAfter = function (element) {
+  element.parentNode.insertBefore(this, element.nextSibling);
+};
+
+function _createModalFooter(buttons = []) {
+  if (buttons.length === 0) {
+    return document.createElement("div");
+  }
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("modal__footer");
+  return wrapper;
+}
+
+function _createModalWindow(options) {
+  const DEFAULT_WIDTH = "300px";
   const modalWindow = document.createElement("div");
   modalWindow.classList.add("modal");
   modalWindow.insertAdjacentHTML(
     "afterbegin",
-    `<div class="modal__rearward">
-        <div class="modal__window">
+    `<div class="modal__rearward" data-close="true">
+        <div class="modal__window style="width: ${
+          options.width || DEFAULT_WIDTH
+        }">
           <div class="modal__header">
-            <span class="modal__title">${title}</span>
-            <span class="modal__close">&times;</span>
+            <span class="modal__title">${options.title || "Modal title"}</span>
+            ${
+              options.closable
+                ? `<span class="modal__close" data-close="true">&times;</span>`
+                : ""
+            }
           </div>
-          <div class="modal__body">
-            <p>${content}</p>
-            <p>${content}</p>
-          </div>
-          <div class="modal__footer">
-            <button>Ok</button>
-            <button>Cansel</button>
+          <div class="modal__body" data-content>
+            ${options.content || ""}
           </div>
         </div>
       </div>`
   );
+  const footer = _createModalFooter(options.footerButtons);
+  footer.appendAfter(modalWindow.querySelector("[data-content]"));
   document.body.appendChild(modalWindow);
-  if (!closable) {
-    const modalClose = document.querySelector(".modal__close");
-    modalClose.hidden = true;
-  }
   return modalWindow;
 }
 $.modal = function (options) {
   const ANIMATION_SPEED = 200;
-  console.log(options["title"]);
-  const $modalWindow = _createModalWindow(
-    options["title"],
-    options["closable"],
-    options["content"]
-  );
+  const $modalWindow = _createModalWindow(options);
   let closing = false;
-  return {
+  let destroyed = false;
+
+  const modal = {
     open() {
+      if (destroyed) {
+        return console.log("Modal is destroed");
+      }
       !closing && $modalWindow.classList.add("open");
     },
     close() {
@@ -53,6 +62,23 @@ $.modal = function (options) {
         closing = false;
       }, ANIMATION_SPEED);
     },
-    destroy() {},
   };
+
+  const listener = (event) => {
+    if (event.target.dataset.close) {
+      modal.close();
+    }
+  };
+  $modalWindow.addEventListener("click", listener);
+
+  return Object.assign(modal, {
+    destroy() {
+      $modalWindow.parentNode.removeChild($modalWindow);
+      $modalWindow.removeEventListener("click", listener);
+      destroyed = true;
+    },
+    setContent(html) {
+      $modalWindow.querySelector("[data-content]").innerHTML = html;
+    },
+  });
 };
