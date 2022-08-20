@@ -2,12 +2,24 @@ Element.prototype.appendAfter = function (element) {
   element.parentNode.insertBefore(this, element.nextSibling);
 };
 
+function noop() {}
+
 function _createModalFooter(buttons = []) {
   if (buttons.length === 0) {
     return document.createElement("div");
   }
   const wrapper = document.createElement("div");
   wrapper.classList.add("modal__footer");
+
+  buttons.forEach((btn) => {
+    const $btn = document.createElement("button");
+    $btn.textContent = btn.text;
+    $btn.classList.add("btn");
+    $btn.classList.add(`btn__${btn.type || "secondary"}`);
+    $btn.onclick = btn.handler || noop;
+    wrapper.appendChild($btn);
+  });
+
   return wrapper;
 }
 

@@ -30,6 +30,7 @@ const myModelWindow = $.modal({
       type: "primary",
       handler() {
         console.log("Primary btn clicked");
+        myModelWindow.close();
       },
     },
     {
@@ -37,6 +38,7 @@ const myModelWindow = $.modal({
       type: "danger",
       handler() {
         console.log("Danger btn clicked");
+        myModelWindow.close();
       },
     },
   ],
